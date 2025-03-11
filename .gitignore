@@ -1,0 +1,49 @@
+# Node.js and React files
+/frontend-react/node_modules/
+/frontend-react/.DS_Store
+/frontend-react/.idea/
+/frontend-react/.vscode/
+/frontend-react/build/
+/frontend-react/.env
+
+# Spring Boot files
+/backend/target/
+/backend/.mvn/
+/backend/.idea/
+/backend/.DS_Store
+/backend/*.iml
+/backend/*.ipr
+/backend/*.iws
+/backend/hs_err_pid*
+
+
+
+# Logging files
+/backend/logs/
+/backend/*.log
+
+# IDE configuration files
+/.idea/
+/.vscode/
+/.eclipse/
+/.netbeans/
+/intellij/
+
+# Maven files
+/.m2/
+/maven-metadata-local.xml
+
+# OS-specific files
+/Thumbs.db
+/.AppleDouble
+/.LSOverride
+/.Trash/
+
+# Other files
+/*.class
+/*.jar
+/*.war
+/*.ear
+/*.zip
+/*.gz
+/*.tmp

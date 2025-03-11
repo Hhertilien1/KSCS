@@ -1,0 +1,442 @@
+/* style.css */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  
+  background-size: cover; 
+  background-repeat: no-repeat; 
+  background-position: center; 
+  color: rgb(0, 0, 0); 
+}
+
+nav {
+  background-color: rgba(100, 30, 30, 1); 
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  margin-right: 15px;
+  font-weight: bold;
+  transition: color 0.3s;
+}
+
+nav a:hover {
+  color: #758e79; 
+}
+
+h1 {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.filter-section {
+  margin: 20px auto;
+  max-width: 800px;
+  padding: 20px;
+  border-radius: 10px;
+  
+}
+
+.filter-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px; 
+}
+
+#filterForm {
+  display: flex;
+  gap: 10px; 
+  align-items: center;
+  flex-wrap: wrap; 
+}
+
+#filterForm label {
+  margin-right: 5px;
+}
+
+.filter-section label,
+.filter-section input,
+.filter-section select,
+.filter-section button {
+  display: block;
+  margin: 10px 0;
+  width: 100%;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px auto;
+  max-width: 90%;
+  background-color: rgba(100, 30, 30, 0.9);
+  color: white;
+}
+
+th, td {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 10px;
+  text-align: left;
+}
+
+th {
+  background-color: rgba(100, 30, 30, 1);
+}
+
+.status-to-do {
+  color: red;
+}
+
+.status-in-progress {
+  color: orange;
+}
+
+.status-completed {
+  color: green;
+}
+
+button {
+  background-color: #641e1e;
+  color: white;
+  border: 1px solid transparent;
+  padding: 10px 15px;
+  border-radius: 8px !important;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+.form-button-login
+{
+ border-radius: 5px;
+ width: 100%; 
+}
+
+button:hover {
+  background-color: #8c2d2d;
+}
+
+.signup-link {
+  text-align: center;
+  margin-top: 10px;
+}
+.signup-link a {
+  color: #698a6b;
+  text-decoration: none;
+}
+.signup-link a:hover {
+  text-decoration: underline;
+}
+
+
+.login-container {
+  background-color: transparent;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 2px solid #641e1e; 
+  width: 30%;
+  
+  /* position: absolute; 
+  top: 40%;  
+  left: 50%; 
+  transform: translate(-50%, -50%);  */
+  
+  margin-top: 16px; 
+  padding: 0; 
+}
+.signup-container {
+  background-color: transparent;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 2px solid #641e1e; 
+  width: 30%;
+  
+margin-bottom: 5vh;
+  /* position: absolute; 
+  top: 45%;  
+  left: 50%; 
+  transform: translate(-50%, -50%);  */
+  
+  padding: 15px; 
+}
+
+.data-table {
+  width: 80%; 
+  margin: 20px auto; 
+  border-collapse: collapse;
+  text-align: left; 
+}
+
+.data-table th, .data-table td {
+  padding: 10px;
+  border: 1px solid #ddd; 
+}
+
+
+.data-table .office-column {
+  text-align: right;
+}
+
+
+.data-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.dashboard-headline {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #641e1e;
+  margin-bottom: 16px;
+  text-align: center;
+  margin-top: 16px;
+
+}
+
+.dashboard-subheadline {
+  font-size: 1.25rem;
+  color: #641e1e;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.table-name {
+  font-size: 1.25rem;
+  color: #641e1e;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);  
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  width: 300px;
+  text-align: center;
+  max-width: 80%;  
+  margin: auto;
+}
+
+.modal h2 {
+  margin: 0 0 10px 0;
+}
+
+.modal p {
+  margin: 10px 0;
+}
+
+.modal button {
+  background-color: #641e1e;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.modal button:hover {
+  background-color: #500d0d;
+}
+
+.backdrop {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 300px); 
+  align-items: center;
+  align-content: center;
+  width: 100%;
+}
+
+
+main {
+  flex: 1; 
+}
+
+.footer {
+  background-color: #641e1e; 
+  color: white;
+  padding: 10px; 
+  text-align: center;
+  margin-top: 20px; 
+}
+
+.footer a {
+  color: #f4f4f4; 
+  text-decoration: none; 
+}
+
+.footer a:hover {
+  color: #ffffff;
+  text-decoration: underline; 
+}
+
+.nav-container {
+  height: 100px;
+  display: flex;
+  align-items: center; /* Aligns items vertically in the middle */
+  justify-content: space-between; /* Distributes space between the brand name and buttons */
+}
+
+.brand-name {
+  color: white;
+  font-size: 24px;
+  margin-right: auto; /* Pushes the brand name to the left */
+}
+
+.error-message{
+  color: red;
+  min-height: 24px;
+  text-align: center;
+}
+
+.success-message{
+  margin-top: 16px;
+  color: green;
+  min-height: 24px;
+  text-align: center;
+}
+
+.create-employee-container{
+  /* height: 60vh !important; */
+  /* top: 54%!important; */
+  padding: 16px !important;
+}
+
+.mt-8{
+  margin-top: 8px !important;
+}
+
+
+.mt-16{
+  margin-top: 16px !important;
+}
+
+
+.mt-24{
+  margin-top: 24px !important;
+}
+
+.p-8{
+  padding: 8px !important;
+}
+
+.form-group{
+  margin:8px 0px;
+
+  > label {
+    margin:4px 0px;
+    font-weight: 520;
+  }
+}
+
+
+
+.modal{
+  /* Modal container */
+.modal-container {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+
+/* Modal content */
+.modal-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  width: 400px;
+}
+
+/* Modal header */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modal-header h2 {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.modal-header .close {
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* Modal body */
+.modal-body {
+  margin-bottom: 20px;
+}
+
+/* Modal footer */
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.modal-footer button {
+  margin-left: 10px;
+}
+
+/* Profile upload confirmation message */
+.confirmation-message {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* Profile upload confirmation image */
+.confirmation-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin-bottom: 10px;
+}
+
+/* Button styles */
+.button {
+  background-color: #4CAF50;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #3e8e41;
+}
+}
