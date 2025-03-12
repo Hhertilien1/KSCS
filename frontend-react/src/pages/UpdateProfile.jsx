@@ -1,74 +1,80 @@
-import React, { useState } from "react"; // Import React and useState hook
+import React, { useState } from "react";
 
-import Footer from "../components/Footer"; // Import Footer component
-import { NavigationHeader } from "../components/NavigationHeader"; // Import Navigation Header component
-import { apiService } from "../services/apiService"; // Import API service for making requests
+import Footer from "../components/Footer";
+import { NavigationHeader } from "../components/NavigationHeader";
+import { apiService } from "../services/apiService";
 
 const UpdateProfile = () => {
-  // Define state variables for form fields
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [cell, setCell] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(""); // State to store error messages
-  const [success, setSuccess] = useState(""); // State to store success messages
-  const [showModal, setShowModal] = useState(false); // State to control modal visibility
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [showModal, setShowModal] = useState(false);
 
-  // Function to validate input fields before updating profile
   const validateInputs = () => {
-    if (!username || !email || !cell || !password) {
+    if (!username || !email || !cell) {
       setError("All fields are required.");
       return false;
     }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Regular expression for email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setError("Please enter a valid email address.");
       return false;
     }
-    const phoneRegex = /^[0-9]+$/; // Regular expression to allow only numbers in cell field
+    const phoneRegex = /^[0-9]+$/;
     if (!phoneRegex.test(cell)) {
       setError("Please enter a valid cell phone number (numbers only).");
       return false;
     }
-    setError(""); // Clear error if all validations pass
+    setError("");
     return true;
   };
 
-  // Function to handle profile update
   const handleUpdateProfile = async () => {
-    setSuccess(""); // Reset success message
+    setSuccess("");
     if (validateInputs()) {
       try {
+        debugger
         const response = await apiService().updateProfile({
           username,
           email,
           cell,
           password,
-          confirmPassword: password, // Confirm password
+          confirmPassword: password,
         });
 
-        setSuccess("Profile updated successfully!"); // Show success message
-        setUsername(response.user.username); // Update username state
-        setEmail(response.user.email); // Update email state
-        setCell(response.user.cell); // Update cell state
-        setShowModal(false); // Close modal after success
+       
+        if(response.user){
+          setSuccess("Profile updated successfully!");
+          setUsername(response.user.username);
+          setEmail(response.user.email);
+          setCell(response.user.cell);
+          localStorage.setItem("user", JSON.stringify(response.user));
+        }
+        if(response.token){
+          localStorage.setItem("authToken", response.token);  
+        }
+        
+        setShowModal(false);
       } catch (error) {
-        setError("Failed to update profile."); // Show error message on failure
+        setError("Failed to update profile.");
+      }finally{
+        setShowModal(false);
+
       }
     }
   };
 
-  // Function to confirm profile update by showing modal
   const confirmUpdate = () => {
     setShowModal(true);
   };
 
-  // Function to close the modal
   const closeModal = () => {
     setShowModal(false);
   };
 
-  // Function to reset form fields
   const resetForm = () => {
     setUsername("");
     setEmail("");
@@ -76,7 +82,6 @@ const UpdateProfile = () => {
     setPassword("");
   };
 
-  // Function to fetch user profile data when component loads
   const init = async () => {
     try {
       const response = await apiService().getSelf();
@@ -84,18 +89,17 @@ const UpdateProfile = () => {
       setEmail(response.user.email);
       setCell(response.user.cell);
     } catch (error) {
-      setError("Failed to load your profile."); // Show error message if fetching profile fails
+      setError("Failed to load your profile.");
     }
   };
 
-  // Fetch user data when component mounts
   React.useEffect(() => {
     init();
   }, []);
 
   return (
     <div>
-      <NavigationHeader showLogout /> {/* Show navigation header with logout option */}
+      <NavigationHeader showLogout />
       <div className="wrapper">
         <header>
           <h1 className="dashboard-headline">Your Profile, Your Way</h1>
@@ -105,7 +109,7 @@ const UpdateProfile = () => {
         </header>
         <div className="wrapper">
           <div className="login-container p-8">
-            <form id="profileForm" className="p-1"> {/* Profile update form */}
+            <form id="profileForm" className="p-1">
               <div className="form-group">
                 <label htmlFor="username">Username: </label>
                 <input
@@ -159,46 +163,46 @@ const UpdateProfile = () => {
                   marginTop: "16px",
                 }}
               >
-                <button type="button" onClick={confirmUpdate}> {/* Show modal on click */}
+                <button type="button" onClick={confirmUpdate}>
                   Update Profile
                 </button>
-                <a href={"/admin"}> {/* Link to admin page */}
+                <a href={"/admin"}>
                   <button>Cancel</button>
                 </a>
               </div>
 
-              {error && <p className="error-message">{error}</p>} {/* Display error message if any */}
-              {success && <p className="success-message">{success}</p>} {/* Display success message if any */}
+              {error && <p className="error-message">{error}</p>}
+              {success && <p className="success-message">{success}</p>}
             </form>
           </div>
         </div>
         {showModal && (
-          <dialog className="modal-container" open> {/* Modal confirmation dialog */}
+          <dialog className="modal-container" open>
             <div className="modal-content">
               <div className="modal-header">
                 <h2>Profile Upload Confirmation</h2>
-                <span className="close" onClick={closeModal}> {/* Close modal on click */}
+                <span className="close" onClick={closeModal}>
                   &times;
                 </span>
               </div>
               <div className="modal-body">
                 <p className="confirmation-message">
-                  Your profile has been updated successfully!
+                  Are you sure you want to update your profile?
                 </p>
               </div>
               <div className="modal-footer">
-                <button className="button" onClick={handleUpdateProfile}> {/* Confirm profile update */}
+                <button className="button" onClick={handleUpdateProfile}>
                   OK
                 </button>
               </div>
             </div>
           </dialog>
         )}
-        {showModal && <div id="backdrop" className="backdrop"></div>} {/* Modal backdrop */}
+        {showModal && <div id="backdrop" className="backdrop"></div>}
       </div>
-      <Footer /> {/* Footer component */}
+      <Footer />
     </div>
   );
 };
 
-export default UpdateProfile; // Export the component
+export default UpdateProfile;

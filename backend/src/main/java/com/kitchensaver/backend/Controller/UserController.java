@@ -6,11 +6,11 @@ import com.kitchensaver.backend.DTO.UserRequest;
 import com.kitchensaver.backend.DTO.UserResponse;
 import com.kitchensaver.backend.Repo.UserRepo;
 import com.kitchensaver.backend.Service.UserService;
-import com.kitchensaver.backend.model.Users;
+
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import java.util.List;
+
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,16 +84,13 @@ public class UserController {
         }
     }
 
-  
-
  
-
     @PatchMapping("/updateProfile")
     public ResponseEntity<UserResponse> updateProfile(@RequestBody UserRequest request,
             HttpServletRequest httpServletRequest) {
         // Calls the service to update the user and returns a response message
         try {
-            UserResponse response = userService.updateProfile(request);
+            UserResponse response = userService.updateProfile(request, httpServletRequest);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new UserResponse(e.getMessage(), ""));

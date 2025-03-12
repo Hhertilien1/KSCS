@@ -165,42 +165,57 @@ public class UserService implements UserDetailsService {
                 .build();
     }
 
-    // Method to update user profile
-    public UserResponse updateProfile(UserRequest request) {
+    public UserResponse updateProfile(UserRequest request, HttpServletRequest httpServletRequest) {
         try {
-            // Find the user by email
-            Optional<Users> userOptional = userRepo.findByEmail(request.getEmail());
+            // Get the JWT token
+            String token = httpServletRequest.getHeader("Authorization").replace("Bearer ", "");
 
-            // If the user is not found, return an error message
+            // Decode the JWT token to get the user email
+            DecodedJWT decodedJWT = JwtUtil.verifyToken(token);
+            String email = decodedJWT.getSubject();
+
+            // Find the user by the email
+            Optional<Users> userOptional = userRepo.findByEmail(email);
+
+            // If the user is not found, return a message
             if (userOptional.isEmpty()) {
-                throw new InvalidRequestException("User not found!"); // Throw exception if user not found
+                throw new InvalidRequestException("User not found!");
             }
 
-            // Update user details with the new values from request
+            // Update the user with the new details
             Users user = userOptional.get();
             if (request.getFirstName() != null && !request.getFirstName().isEmpty()) {
-                user.setFirstName(request.getFirstName()); // Update first name
+                user.setFirstName(request.getFirstName());
             }
             if (request.getLastName() != null && !request.getLastName().isEmpty()) {
-                user.setLastName(request.getLastName()); // Update last name
+                user.setLastName(request.getLastName());
+            }
+            if (request.getUsername() != null && !request.getUsername().isEmpty()) {
+                user.setUsername(request.getUsername());
+            }
+            if (request.getEmail() != null && !request.getEmail().isEmpty()) {
+                user.setEmail(request.getEmail());
             }
             if (request.getPassword() != null && !request.getPassword().isEmpty()) {
-                user.setPassword(passwordEncoder.encode(request.getPassword())); // Update password
+                user.setPassword(passwordEncoder.encode(request.getPassword()));
             }
             if (request.getCell() != null && !request.getCell().isEmpty()) {
-                user.setCell(request.getCell()); // Update cell number
+                user.setCell(request.getCell());
             }
 
-            // Save the updated user to the database
+            // Save the updated user
             userRepo.save(user);
+            user.setPassword("");
+            // Generate a new JWT token
 
-            // Return the user response with success message
-            return new UserResponse("User updated successfully", "", user);
+            String newToken = JwtUtil.generateToken(user.getEmail(), user.getRole().name(), user.getId());
+            // Return the user response
+            return new UserResponse("User updated successfully", newToken, user);
 
         } catch (InvalidRequestException e) {
-            return new UserResponse(e.getMessage(), ""); // Return error message if invalid request
+            return new UserResponse(e.getMessage(), "");
         } catch (Exception e) {
-            return new UserResponse(e.getMessage(), ""); // Return error message for other exceptions
+            return new UserResponse(e.getMessage(), "");
         }
     }
 
