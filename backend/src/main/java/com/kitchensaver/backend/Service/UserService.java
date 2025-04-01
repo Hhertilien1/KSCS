@@ -25,7 +25,6 @@ import jakarta.servlet.http.HttpServletRequest; // For accessing HTTP request
 
 import java.util.List;
 import java.util.Optional; // Optional to handle null values safely
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger; // Logger for logging events
 import org.slf4j.LoggerFactory; // LoggerFactory to create the logger

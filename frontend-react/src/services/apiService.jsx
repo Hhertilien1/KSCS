@@ -75,6 +75,95 @@ export const apiService = () => {
       }
     },
 
+    // Function to delete a user by ID
+    deleteUser: async (userId) => {
+      try {
+        await authAxios.delete(`/user/delete/${userId}`);
+      } catch (error) {
+        throw new Error(
+          error.response?.data?.message || "Failed to delete user"
+        );
+      }
+    },
+
+    // Function to create a new employee
+    createEmployee: async (employeeData) => {
+      try {
+        const response = await authAxios.post("/user/createEmployee", employeeData);
+        if (!response?.data) {
+          throw new Error({ error: { response } });
+        }
+        return response.data;
+      } catch (error) {
+        throw new Error(
+          error.response?.data?.message || "Failed to create employee"
+        );
+      }
+    },
+
+    // Function to fetch all employees
+    getAllEmployees: async () => {
+      try {
+        const response = await authAxios.get("/user/getAllEmployees");
+        if (!response?.data) {
+          throw new Error({ error: { response } });
+        }
+        return response.data;
+      } catch (error) {
+        throw new Error(
+          error.response?.data?.message || "Failed to fetch all employees"
+        );
+      }
+    },
+
+    // Function to create a new job
+    createJob: async (jobData) => {
+      try {
+        const response = await authAxios.post("/jobs", jobData);
+        return response.data;
+      } catch (error) {
+        throw new Error(
+          error.response?.data?.message || "Failed to create job"
+        );
+      }
+    },
+
+    // Function to delete a job by ID
+    deleteJob: async (jobId) => {
+      try {
+        const response = await authAxios.delete(`/jobs/${jobId}`);
+        return response.data;
+      } catch (error) {
+        throw new Error(
+          error.response?.data?.message || "Failed to delete job"
+        );
+      }
+    },
+
+    // Function to fetch all jobs
+    getJobs: async () => {
+      try {
+        const response = await authAxios.get("/jobs");
+        return response.data;
+      } catch (error) {
+        throw new Error(
+          error.response?.data?.message || "Failed to fetch jobs"
+        );
+      }
+    },
+
+    // Function to update a job's details
+    updateJob: async (jobId, jobData) => {
+      try {
+        const response = await authAxios.put(`/jobs/${jobId}`, jobData);
+        return response.data;
+      } catch (error) {
+        throw new Error(
+          error.response?.data?.message || "Failed to update job"
+        );
+      }
+    },
+
     // Function to update the user's profile
     updateProfile: async (userData) => {
       try {
@@ -90,5 +179,5 @@ export const apiService = () => {
         ); // Handle errors
       }
     },
-  };
+  }; 
 };

@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import com.kitchensaver.backend.Service.UserService;
 
 import java.io.IOException;
-import java.nio.file.AccessDeniedException;
 
 @Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
