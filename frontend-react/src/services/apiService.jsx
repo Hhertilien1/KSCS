@@ -164,6 +164,28 @@ export const apiService = () => {
       }
     },
 
+      // Method to update employee data
+    updateEmployee: async (employeeData) => {
+      try {
+        // Sending a PATCH request to the '/user/updateEmployee' endpoint with the employee data
+        const response = await authAxios.patch("/user/updateEmployee", employeeData);
+        
+        // If the response doesn't contain data, throw an error
+        if (!response?.data) {
+          throw new Error({ error: { response } });
+        }
+
+        // Return the response data (updated employee information)
+        return response.data;
+      } catch (error) {
+        // If an error occurs, throw a new error with the message or a default message
+        throw new Error(
+          error.response?.data?.message || "Failed to update employee"
+        );
+      }
+    },
+
+
     // Function to update the user's profile
     updateProfile: async (userData) => {
       try {
