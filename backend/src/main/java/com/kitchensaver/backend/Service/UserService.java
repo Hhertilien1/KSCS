@@ -23,7 +23,9 @@ import com.kitchensaver.backend.util.JwtUtil; // Utility class for handling JWT 
 
 import jakarta.servlet.http.HttpServletRequest; // For accessing HTTP request
 
+import java.util.List;
 import java.util.Optional; // Optional to handle null values safely
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger; // Logger for logging events
 import org.slf4j.LoggerFactory; // LoggerFactory to create the logger
@@ -256,4 +258,12 @@ public class UserService implements UserDetailsService {
             return "User not found"; // Return error if something goes wrong
         }
     }
+
+   public List<UserResponse> getUsersByRole(Role role) {
+    List<Users> users = userRepo.findByRole(role);
+    return users.stream()
+            .map(user -> new UserResponse(user.getEmail(), user.getFullName()))
+            .collect(Collectors.toList());
+}
+
 }

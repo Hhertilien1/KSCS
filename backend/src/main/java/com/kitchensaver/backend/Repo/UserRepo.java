@@ -2,6 +2,8 @@ package com.kitchensaver.backend.Repo;
 
 import com.kitchensaver.backend.model.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,4 +35,10 @@ public interface UserRepo extends JpaRepository<Users, Long> {
      * @return A list of users who are not of the specified role.
      */
     List<Users> findAllByRoleNot(Role role);
+
+
+    // Find users by role
+       List<Users> findByRole(Role role);
+
+
 }

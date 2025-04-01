@@ -38,6 +38,10 @@ public class Users {
     @Column(nullable = false)
     private String password;
 
+    public String getFullName() {
+        return this.firstName + " " + this.lastName;
+    }
+
 
 
     public Long getId() {

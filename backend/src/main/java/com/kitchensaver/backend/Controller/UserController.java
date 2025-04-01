@@ -6,11 +6,12 @@ import com.kitchensaver.backend.DTO.UserRequest;
 import com.kitchensaver.backend.DTO.UserResponse;
 import com.kitchensaver.backend.Repo.UserRepo;
 import com.kitchensaver.backend.Service.UserService;
-
+import com.kitchensaver.backend.model.Role;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-
+import java.util.Collections;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,5 +111,18 @@ public class UserController {
             return ResponseEntity.badRequest().body(new UserResponse(e.getMessage(), ""));
         }
     }
+
+    @GetMapping("/getUsersByRole")
+    public ResponseEntity<List<UserResponse>> getUsersByRole(@RequestParam Role role) {
+        logger.info("Fetching users with role: {}", role);
+        try {
+            List<UserResponse> users = userService.getUsersByRole(role);
+            return ResponseEntity.ok(users);
+        } catch (Exception e) {
+            logger.error("Failed to retrieve users by role: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(Collections.emptyList());
+        }
+    }
+
 
 }

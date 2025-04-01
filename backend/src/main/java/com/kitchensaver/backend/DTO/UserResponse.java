@@ -8,6 +8,7 @@ public class UserResponse {
     private String message; // Message to display
     private String role; // Role of the user
     private Users user; // The user object
+    
 
     // Constructor to initialize the UserResponse with message, token, and user
     public UserResponse(String message, String token, Users user) {
@@ -15,6 +16,7 @@ public class UserResponse {
         this.user = user; // Set the user object
         this.role = user.getRole().name(); // Set the role of the user
         this.message = message; // Set the message
+    
     }
 
     // Constructor to initialize the UserResponse with message and token
@@ -59,4 +61,6 @@ public class UserResponse {
         this.role = user.getRole().name(); // Update the role based on user
         this.user = user; // Set the user object
     }
+
+
 }

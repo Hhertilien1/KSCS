@@ -6,6 +6,9 @@ import com.kitchensaver.backend.Exceptions.NotFoundException;
 import com.kitchensaver.backend.Repo.JobRepo;
 import com.kitchensaver.backend.Repo.UserRepo;
 import com.kitchensaver.backend.model.Job;
+import com.kitchensaver.backend.model.Role;
+import com.kitchensaver.backend.model.Users;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -141,5 +144,15 @@ public class JobService {
         return jobRepo.findByInstallerId(id).stream()  // Fetch jobs by installer ID
                 .map(this::mapEntityToResponse)  // Convert each Job entity to JobResponse DTO
                 .collect(Collectors.toList());  // Collect and return the list of JobResponse DTOs
+    }
+
+     // Fetch all cabinet makers (users with role 'CABINET_MAKER')
+     public List<Users> getAllCabinetMakers() {
+        return userRepo.findByRole(Role.CABINET_MAKER);
+    }
+
+    // Fetch all installers (users with role 'INSTALLER')
+    public List<Users> getAllInstallers() {
+        return userRepo.findByRole(Role.INSTALLER);
     }
 }
