@@ -36,9 +36,4 @@ public interface UserRepo extends JpaRepository<Users, Long> {
      */
     List<Users> findAllByRoleNot(Role role);
 
-
-    // Find users by role
-       List<Users> findByRole(Role role);
-
-
 }

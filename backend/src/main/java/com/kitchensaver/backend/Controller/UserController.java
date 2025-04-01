@@ -6,11 +6,10 @@ import com.kitchensaver.backend.DTO.UserRequest;
 import com.kitchensaver.backend.DTO.UserResponse;
 import com.kitchensaver.backend.Repo.UserRepo;
 import com.kitchensaver.backend.Service.UserService;
-import com.kitchensaver.backend.model.Role;
+import com.kitchensaver.backend.model.Users;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -18,12 +17,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
 import org.springframework.web.bind.annotation.*;
 
-// This class is a controller that handles user-related actions
+/**
+ * Controller class for handling user-related actions.
+ */
 @RestController
-@RequestMapping("/api/user") // all requests to "/api/user" will come here
+@RequestMapping("/api/user") // All API requests with "/api/user" will be handled here
 public class UserController {
     private final UserService userService;
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
@@ -34,32 +34,29 @@ public class UserController {
     }
 
     /**
-     * This method is for user registration.
+     * Handles user registration.
      *
-     * @param request The user details sent from the frontend.
-     * @return A message saying if registration was successful.
+     * @param request Contains user details from the frontend.
+     * @return Response with registration success or failure message.
      */
-    @PostMapping("/register") // This handles the POST request to "/api/user/register"
+    @PostMapping("/register") // Handles POST requests to "/api/user/register"
     public ResponseEntity<UserResponse> registerUser(@RequestBody UserRequest request) {
-        // Calls the service to register the user and returns a response message
-
         try {
             UserResponse response = userService.registerUser(request);
-            return ResponseEntity.ok(response); // Sends back the result of the registration
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new UserResponse(e.getMessage(), ""));
         }
     }
 
     /**
-     * This method is for user login.
+     * Handles user login.
      *
-     * @param request The login details (email & password) sent from the frontend.
-     * @return A response with login details (like a token).
+     * @param request Contains login credentials (email & password).
+     * @return Response containing login details (e.g., authentication token).
      */
-    @PostMapping("/login")
+    @PostMapping("/login") // Handles POST requests to "/api/user/login"
     public ResponseEntity<UserResponse> loginUser(@RequestBody LoginRequest request) {
-        // Looks for the user by their email
         try {
             UserResponse response = userService.loginUser(request);
             return ResponseEntity.ok(response);
@@ -69,13 +66,13 @@ public class UserController {
     }
 
     /**
-     * This method is for user login.
+     * Handles employee creation (Admin only).
      *
-     * @param request The login details (email & password) sent from the frontend.
-     * @return A response with login details (like a token).
+     * @param request Contains details of the employee to be created.
+     * @return Response confirming the employee creation.
      */
-    @PostMapping("/createEmployee")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/createEmployee") // Handles POST requests to "/api/user/createEmployee"
+    @PreAuthorize("hasRole('ADMIN')") // Only ADMIN users can access this endpoint
     public ResponseEntity<UserResponse> createEmployee(@RequestBody CreateEmployeeRequest request) {
         try {
             UserResponse response = userService.registerUser(request);
@@ -85,11 +82,49 @@ public class UserController {
         }
     }
 
- 
-    @PatchMapping("/updateProfile")
+    /**
+     * Handles user deletion (Admin only).
+     *
+     * @param userId ID of the user to be deleted.
+     * @return Response confirming the deletion of the user.
+     */
+    @DeleteMapping("/delete/{userId}") // Handles DELETE requests to "/api/user/delete/{userId}"
+    @PreAuthorize("hasRole('ADMIN')") // Only ADMIN users can access this endpoint
+    public ResponseEntity<String> deleteUser(@PathVariable Long userId) {
+        try {
+            userService.deleteUser(userId);
+            return ResponseEntity.ok("User deleted successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    /**
+     * Fetches all employees (Admin only).
+     *
+     * @return List of all employees.
+     */
+    @GetMapping("/getAllEmployees") // Handles GET requests to "/api/user/getAllEmployees"
+    @PreAuthorize("hasAnyRole('ADMIN')") // Only ADMIN users can access this endpoint
+    public ResponseEntity<List<Users>> getAllEmployees() {
+        try {
+            List<Users> response = userService.getAllEmployees();
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    /**
+     * Updates the profile of the currently logged-in user.
+     *
+     * @param request             Contains updated user details.
+     * @param httpServletRequest  The HTTP request containing authentication details.
+     * @return Response with updated profile information.
+     */
+    @PatchMapping("/updateProfile") // Handles PATCH requests to "/api/user/updateProfile"
     public ResponseEntity<UserResponse> updateProfile(@RequestBody UserRequest request,
             HttpServletRequest httpServletRequest) {
-        // Calls the service to update the user and returns a response message
         try {
             UserResponse response = userService.updateProfile(request, httpServletRequest);
             return ResponseEntity.ok(response);
@@ -98,11 +133,33 @@ public class UserController {
         }
     }
 
-  
+    /**
+     * Updates an employee's details (Admin only).
+     *
+     * @param request             Contains updated employee details.
+     * @param httpServletRequest  The HTTP request containing authentication details.
+     * @return Response with updated employee information.
+     */
+    @PatchMapping("/updateEmployee") // Handles PATCH requests to "/api/user/updateEmployee"
+    @PreAuthorize("hasAnyRole('ADMIN')") // Only ADMIN users can access this endpoint
+    public ResponseEntity<UserResponse> updateEmployee(@RequestBody UserRequest request,
+            HttpServletRequest httpServletRequest) {
+        try {
+            UserResponse response = userService.updateEmployee(request);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new UserResponse(e.getMessage(), ""));
+        }
+    }
 
-    @GetMapping("/getSelf")
+    /**
+     * Retrieves details of the currently logged-in user.
+     *
+     * @param httpServletRequest The HTTP request containing authentication details.
+     * @return Response with user details.
+     */
+    @GetMapping("/getSelf") // Handles GET requests to "/api/user/getSelf"
     public ResponseEntity<UserResponse> getSelf(HttpServletRequest httpServletRequest) {
-        // Calls the service to get the user and returns a response message
         String email = userService.getEmailFromToken(httpServletRequest);
         try {
             UserResponse response = userService.getSelf(email);
@@ -111,18 +168,4 @@ public class UserController {
             return ResponseEntity.badRequest().body(new UserResponse(e.getMessage(), ""));
         }
     }
-
-    @GetMapping("/getUsersByRole")
-    public ResponseEntity<List<UserResponse>> getUsersByRole(@RequestParam Role role) {
-        logger.info("Fetching users with role: {}", role);
-        try {
-            List<UserResponse> users = userService.getUsersByRole(role);
-            return ResponseEntity.ok(users);
-        } catch (Exception e) {
-            logger.error("Failed to retrieve users by role: {}", e.getMessage());
-            return ResponseEntity.badRequest().body(Collections.emptyList());
-        }
-    }
-
-
 }

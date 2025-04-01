@@ -62,14 +62,6 @@ public class JobService {
         jobRepo.delete(job);  // Delete the found job
     }
 
-    // Method to update the job's image (e.g., job photo)
-    public JobResponse updateJobImage(Long jobId, String image) throws Exception {
-        // Find the job by ID, throw exception if not found
-        Job job = jobRepo.findById(jobId)
-                .orElseThrow(() -> new NotFoundException("Job not found"));
-        job.setImage(image);  // Set the updated image
-        return mapEntityToResponse(jobRepo.save(job));  // Save and return the updated job response
-    }
 
     // Helper method to map JobRequest data to a Job entity
     private void mapRequestToEntity(JobRequest request, Job job) throws Exception {
@@ -146,13 +138,4 @@ public class JobService {
                 .collect(Collectors.toList());  // Collect and return the list of JobResponse DTOs
     }
 
-     // Fetch all cabinet makers (users with role 'CABINET_MAKER')
-     public List<Users> getAllCabinetMakers() {
-        return userRepo.findByRole(Role.CABINET_MAKER);
-    }
-
-    // Fetch all installers (users with role 'INSTALLER')
-    public List<Users> getAllInstallers() {
-        return userRepo.findByRole(Role.INSTALLER);
-    }
 }

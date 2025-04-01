@@ -4,7 +4,6 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.kitchensaver.backend.DTO.JobRequest;
 import com.kitchensaver.backend.DTO.JobResponse;
 import com.kitchensaver.backend.Service.JobService;
-import com.kitchensaver.backend.Service.UserService;
 import com.kitchensaver.backend.util.JwtUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,88 +17,128 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-// Marks this class as a REST controller for managing jobs
+/**
+ * JobController handles HTTP requests related to job management.
+ * It includes endpoints for creating, updating, deleting, retrieving, and filtering jobs.
+ */
 @RestController
 @RequestMapping("/api/jobs")
 public class JobController {
-    private final JobService jobService;  // Dependency injection for JobService to handle job-related logic
-    private final UserService userService; // Dependency injection for UserService to handle job-related logic
-    private static final Logger logger = LoggerFactory.getLogger(JobController.class);  // Logger for logging messages
-    
-        // Constructor to initialize the JobController with JobService
-        public JobController(JobService jobService, UserService userService) {
-            this.jobService = jobService;
-            this.userService = userService;
+
+    // Service layer dependency for handling job-related business logic
+    private final JobService jobService;
+
+    // Logger instance for logging events and debugging information
+    private static final Logger logger = LoggerFactory.getLogger(JobController.class);
+
+    // Constructor to inject JobService dependency
+    public JobController(JobService jobService) {
+        this.jobService = jobService;
     }
 
-
     // ADMIN ENDPOINTS
-    // POST endpoint for creating a job; accessible only by users with the ADMIN role
+
+    /**
+     * Creates a new job. Only accessible by users with ADMIN role.
+     * 
+     * @param request Job request data
+     * @return ResponseEntity with JobResponse or error message
+     */
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<JobResponse> createJob(@RequestBody JobRequest request) {
         try {
-            JobResponse response = jobService.createJob(request);  // Create the job using the service
-            return ResponseEntity.ok(response);  // Return the created job as a successful response
+            JobResponse response = jobService.createJob(request);
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new JobResponse(e.getMessage()));  // Handle exceptions and return error
+            return ResponseEntity.badRequest().body(new JobResponse(e.getMessage()));
         }
     }
 
-    // PUT endpoint for updating a job; accessible only by users with the ADMIN role
+    /**
+     * Updates an existing job. Only accessible by users with ADMIN role.
+     * 
+     * @param jobId   ID of the job to update
+     * @param request Job request data with updated values
+     * @return ResponseEntity with updated JobResponse or not found status
+     */
     @PutMapping("/{jobId}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<JobResponse> updateJob(@PathVariable Long jobId, @RequestBody JobRequest request) {
         try {
-            JobResponse response = jobService.updateJob(jobId, request);  // Update the job using the service
-            return ResponseEntity.ok(response);  // Return the updated job as a successful response
+            JobResponse response = jobService.updateJob(jobId, request);
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.notFound().build();  // Handle case where job is not found
+            return ResponseEntity.notFound().build();
         }
     }
 
-    // DELETE endpoint for deleting a job; accessible only by users with the ADMIN role
+    /**
+     * Deletes a job by ID. Only accessible by users with ADMIN role.
+     * 
+     * @param jobId ID of the job to delete
+     * @return ResponseEntity with no content or not found status
+     */
     @DeleteMapping("/{jobId}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteJob(@PathVariable Long jobId) {
         try {
-            jobService.deleteJob(jobId);  // Delete the job using the service
-            return ResponseEntity.noContent().build();  // Return no content response on successful deletion
+            jobService.deleteJob(jobId);
+            return ResponseEntity.noContent().build();
         } catch (Exception e) {
-            return ResponseEntity.notFound().build();  // Handle case where job is not found
+            return ResponseEntity.notFound().build();
         }
     }
 
-    // GET endpoint to retrieve all jobs; accessible to users with the roles ADMIN, CABINET_MAKER, or INSTALLER
+    /**
+     * Retrieves all jobs based on user role.
+     * - ADMIN: Retrieves all jobs
+     * - CABINET_MAKER: Retrieves jobs assigned to the cabinet maker
+     * - INSTALLER: Retrieves jobs assigned to the installer
+     * 
+     * @param httpServletRequest HTTP request containing authentication token
+     * @return ResponseEntity with a list of jobs or bad request status
+     */
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'CABINET_MAKER', 'INSTALLER')")
     public ResponseEntity<List<JobResponse>> getAllJobs(HttpServletRequest httpServletRequest) {
-        String token = httpServletRequest.getHeader("Authorization").replace("Bearer ", "");  // Extract JWT token from request header
-        DecodedJWT decodedJWT = JwtUtil.verifyToken(token);  // Verify and decode the JWT token
-        String role = decodedJWT.getClaim("role").asString();  // Get the role from the decoded JWT token
-        Long userId = decodedJWT.getClaim("id").asLong();  // Get the user ID from the decoded JWT token
+        // Extract the Authorization token from the request header
+        String token = httpServletRequest.getHeader("Authorization").replace("Bearer ", "");
+        
+        // Decode the JWT token to extract user role and ID
+        DecodedJWT decodedJWT = JwtUtil.verifyToken(token);
+        String role = decodedJWT.getClaim("role").asString();
+        Long userId = decodedJWT.getClaim("id").asLong();
 
-        logger.info("fine here :: 111" );  // Log for debugging purposes
-
-        List<JobResponse> jobs;  // List to hold the job responses
-
-        // Check the user's role and fetch jobs accordingly
+        logger.info("fine here :: 111");
+        
+        // Retrieve jobs based on user role
+        List<JobResponse> jobs;
         if ("ADMIN".equals(role)) {
-            jobs = jobService.getAllJobs();  // Fetch all jobs for an admin
+            jobs = jobService.getAllJobs();
         } else if ("CABINET_MAKER".equals(role)) {
-            jobs = jobService.getJobsByCabinetMakerId(userId);  // Fetch jobs assigned to the cabinet maker
+            jobs = jobService.getJobsByCabinetMakerId(userId);
         } else if ("INSTALLER".equals(role)) {
-            jobs = jobService.getJobsByInstallerId(userId);  // Fetch jobs assigned to the installer
+            jobs = jobService.getJobsByInstallerId(userId);
         } else {
-            logger.info("not fine :: 2");  // Log an error if the role is not recognized
-            return ResponseEntity.badRequest().build();  // Return bad request if the role is invalid
+            logger.info("not fine :: 2");
+            return ResponseEntity.badRequest().build();
         }
-
-        return ResponseEntity.ok(jobs);  // Return the list of jobs as a successful response
+        return ResponseEntity.ok(jobs);
     }
 
     // INSTALLER ENDPOINTS
-    // PATCH endpoint to update the status of a job; accessible to users with the roles ADMIN, CABINET_MAKER, or INSTALLER
+
+    /**
+     * Updates job status including material order and arrival status.
+     * Accessible by ADMIN, CABINET_MAKER, and INSTALLER roles.
+     * 
+     * @param jobId               ID of the job
+     * @param status              New job status
+     * @param materialOrderStatus Status of material order
+     * @param materialArrivalStatus Status of material arrival
+     * @return ResponseEntity with updated job details or error message
+     */
     @PatchMapping("/{jobId}/status")
     @PreAuthorize("hasAnyRole('ADMIN', 'CABINET_MAKER', 'INSTALLER')")
     public ResponseEntity<JobResponse> updateJobStatus(
@@ -108,15 +147,27 @@ public class JobController {
             @RequestParam String materialOrderStatus,
             @RequestParam String materialArrivalStatus) {
         try {
-            JobResponse response = jobService.updateJobStatus(jobId, status, materialOrderStatus, materialArrivalStatus);  // Update the job status using the service
-            return ResponseEntity.ok(response);  // Return the updated job as a successful response
+            JobResponse response = jobService.updateJobStatus(jobId, status, materialOrderStatus, materialArrivalStatus);
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new JobResponse(e.getMessage()));  // Return error if the update fails
+            return ResponseEntity.badRequest().body(new JobResponse(e.getMessage()));
         }
     }
 
+   
 
-    // GET endpoint to filter jobs based on various parameters; accessible to users with the roles ADMIN, CABINET_MAKER, or INSTALLER
+    /**
+     * Filters jobs based on different criteria such as status, installer ID,
+     * material order status, material arrival status, and office location.
+     * Accessible by ADMIN, CABINET_MAKER, and INSTALLER roles.
+     * 
+     * @param status              Job status filter
+     * @param installerId         Installer ID filter
+     * @param materialOrderStatus Material order status filter
+     * @param materialArrivalStatus Material arrival status filter
+     * @param office              Office location filter
+     * @return ResponseEntity with a filtered list of jobs
+     */
     @GetMapping("/filter")
     @PreAuthorize("hasAnyRole('ADMIN', 'CABINET_MAKER', 'INSTALLER')")
     public ResponseEntity<List<JobResponse>> filterJobs(
@@ -125,8 +176,6 @@ public class JobController {
             @RequestParam(required = false) String materialOrderStatus,
             @RequestParam(required = false) String materialArrivalStatus,
             @RequestParam(required = false) String office) {
-        return ResponseEntity
-                .ok(jobService.filterJobs(status, installerId, materialOrderStatus, materialArrivalStatus, office));  // Return filtered list of jobs
+        return ResponseEntity.ok(jobService.filterJobs(status, installerId, materialOrderStatus, materialArrivalStatus, office));
     }
-    
 }
