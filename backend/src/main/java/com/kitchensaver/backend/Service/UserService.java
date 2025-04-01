@@ -259,11 +259,102 @@ public class UserService implements UserDetailsService {
         }
     }
 
-   public List<UserResponse> getUsersByRole(Role role) {
-    List<Users> users = userRepo.findByRole(role);
-    return users.stream()
-            .map(user -> new UserResponse(user.getEmail(), user.getFullName()))
-            .collect(Collectors.toList());
-}
-
-}
+    //Method to update employee information
+    public UserResponse updateEmployee(UserRequest request) {
+        try {
+            // Validate that the request contains an ID
+            if (request.getId() == null || request.getId().isEmpty()) {
+                throw new InvalidRequestException("Id is required!");
+            }
+    
+            // Retrieve the user from the database using the provided ID
+            Optional<Users> userOptional = userRepo.findById(Long.parseLong(request.getId()));
+    
+            // If the user is not found, throw an exception
+            if (userOptional.isEmpty()) {
+                throw new InvalidRequestException("User not found!");
+            }
+    
+            // Extract the user object from the optional
+            Users user = userOptional.get();
+    
+            // Update the first name if provided in the request
+            if (request.getFirstName() != null && !request.getFirstName().isEmpty()) {
+                user.setFirstName(request.getFirstName());
+            }
+    
+            // Update the last name if provided in the request
+            if (request.getLastName() != null && !request.getLastName().isEmpty()) {
+                user.setLastName(request.getLastName());
+            }
+    
+            // Update the email if provided and ensure it is unique
+            if (request.getEmail() != null && !request.getEmail().isEmpty()) {
+                // Check if the email is already in use by another user
+                if (userRepo.findByEmail(request.getEmail()).isPresent()
+                        && userRepo.findByEmail(request.getEmail()).get().getId() != user.getId()) {
+                    throw new EmailAlreadyExistsException("Email already exists!");
+                }
+                user.setEmail(request.getEmail());
+            }
+    
+            // Update the cell phone number if provided in the request
+            if (request.getCell() != null && !request.getCell().isEmpty()) {
+                user.setCell(request.getCell());
+            }
+    
+            // Update the office location if provided in the request
+            if (request.getOffice() != null && !request.getOffice().isEmpty()) {
+                user.setOffice(request.getOffice());
+            }
+    
+            // Update the role if provided in the request
+            if (request.getRole() != null && !request.getRole().isEmpty()) {
+                try {
+                    // Convert role to uppercase and set it
+                    user.setRole(Role.valueOf(request.getRole().toUpperCase()));
+                } catch (IllegalArgumentException e) {
+                    // Throw an exception if the role is invalid
+                    throw new InvalidRequestException("Invalid role! Allowed values: ADMIN, CABINET_MAKER, INSTALLER");
+                }
+            }
+    
+            // Encrypt the password before saving it, ensuring it matches the confirmation password
+            if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+                if (!request.getPassword().equals(request.getConfirmPassword())) {
+                    throw new InvalidRequestException("Passwords do not match!");
+                }
+                user.setPassword(passwordEncoder.encode(request.getPassword()));
+            }
+    
+            // Save the updated user information to the database
+            userRepo.save(user);
+    
+            // Return a success response
+            return new UserResponse("User updated successfully", "", user);
+    
+        } catch (InvalidRequestException e) {
+            // Handle invalid request errors
+            return new UserResponse(e.getMessage(), "");
+        } catch (EmailAlreadyExistsException e) {
+            // Handle email duplication errors
+            return new UserResponse(e.getMessage(), "");
+        } catch (Exception e) {
+            // Handle general exceptions
+            return new UserResponse(e.getMessage(), "");
+        }
+    }
+    
+    public List<Users> getAllEmployees() {
+        // Retrieve all users from the database except those with the ADMIN role
+        List<Users> users = userRepo.findAllByRoleNot(Role.ADMIN);
+    
+        // Return the list of employees
+        return users;
+    }
+    
+    public void deleteUser(Long id) {
+        // Delete the user from the database based on the provided ID
+        userRepo.deleteById(id);
+    }
+}    

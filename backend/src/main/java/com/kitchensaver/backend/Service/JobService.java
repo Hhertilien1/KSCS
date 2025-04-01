@@ -6,8 +6,6 @@ import com.kitchensaver.backend.Exceptions.NotFoundException;
 import com.kitchensaver.backend.Repo.JobRepo;
 import com.kitchensaver.backend.Repo.UserRepo;
 import com.kitchensaver.backend.model.Job;
-import com.kitchensaver.backend.model.Role;
-import com.kitchensaver.backend.model.Users;
 
 import org.springframework.stereotype.Service;
 
