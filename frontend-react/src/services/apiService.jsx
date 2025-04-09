@@ -1,81 +1,57 @@
-import axios from "axios"; // Import axios for making API requests
+import axios from "axios";
 
+// Function that provides API service methods
 export const apiService = () => {
-  // Define the base URL for API requests, using an environment variable
+  // Base URL for API from environment variables
   const API_BASE_URL = `${process.env.REACT_APP_API_BASE_URL}/api`;
 
-  // Create an axios instance for public requests (no authentication required)
+  // Axios instance for public (non-authenticated) requests
   const publicAxios = axios.create({
-    baseURL: API_BASE_URL, // Set the base URL for API requests
-    headers: { "Content-Type": "application/json" }, // Set default headers
+    baseURL: API_BASE_URL,
+    headers: { "Content-Type": "application/json" },
   });
 
-  // Create an axios instance for authenticated requests (needs a token)
+  // Axios instance for authenticated requests
   const authAxios = axios.create({
-    baseURL: API_BASE_URL, // Set the base URL
+    baseURL: API_BASE_URL,
     headers: {
-      "Content-Type": "application/json", // Set default headers
-      Authorization: `Bearer ${localStorage.getItem("authToken")}`, // Get token from local storage
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("authToken")}`,
     },
   });
 
-  // Add an interceptor to handle unauthorized access (e.g., token expired)
+  // Interceptor for handling unauthorized responses (401)
   authAxios.interceptors.response.use(
-    (response) => response, // Return response if successful
+    (response) => response,
     (error) => {
       if (error.response?.status === 401) {
-        // If the user is not authorized, they could be redirected to login
-        // localStorage.clear(); // Uncomment this to clear stored user data
-        // window.location = "/login"; // Uncomment this to redirect to login page
+        // Handle unauthorized error (you can redirect or clear storage if needed)
+        // localStorage.clear();
+        // window.location = "/login";
       }
-      return Promise.reject(error); // Pass the error forward
+      return Promise.reject(error);
     }
   );
 
+  // Return all API functions
   return {
-    // Function to log in a user
+    // Login user
     login: async (payload) => {
       try {
-        const response = await publicAxios.post("/user/login", payload); // Send login request
+        const response = await publicAxios.post("/user/login", payload);
         if (!response?.data?.token) {
-          throw new Error({ error: { response } }); // Throw an error if no token is received
+          throw new Error({ error: { response } });
         }
-        localStorage.setItem("authToken", response.data.token); // Store token in local storage
-        localStorage.setItem("user", JSON.stringify(response.data.user)); // Store user data
-        return response.data; // Return the response data
+        // Save token and user data to localStorage
+        localStorage.setItem("authToken", response.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+        return response.data;
       } catch (error) {
-        throw new Error(error.response?.data?.message || "Login failed"); // Handle errors
+        throw new Error(error.response?.data?.message || "Login failed");
       }
     },
 
-    // Function to register a new user
-    register: async (userData) => {
-      try {
-        const response = await publicAxios.post("/user/register", userData); // Send registration request
-        if (!response?.data?.token) {
-          throw new Error({ error: { response } }); // Throw an error if no token is received
-        }
-        localStorage.setItem("authToken", response.data.token); // Store token
-        localStorage.setItem("user", JSON.stringify(response.data.user)); // Store user data
-        return response.data; // Return response data
-      } catch (error) {
-        throw new Error(error.response?.data?.message || "Registration failed"); // Handle errors
-      }
-    },
-
-    // Function to get the currently logged-in user's information
-    getSelf: async () => {
-      try {
-        const response = await authAxios.get("/user/getSelf"); // Fetch user data
-        return response.data; // Return user data
-      } catch (error) {
-        throw new Error(
-          error.response?.data?.message || "Failed to fetch user data"
-        ); // Handle errors
-      }
-    },
-
-    // Function to delete a user by ID
+    // Delete user by ID
     deleteUser: async (userId) => {
       try {
         await authAxios.delete(`/user/delete/${userId}`);
@@ -86,7 +62,7 @@ export const apiService = () => {
       }
     },
 
-    // Function to create a new employee
+    // Create a new employee
     createEmployee: async (employeeData) => {
       try {
         const response = await authAxios.post("/user/createEmployee", employeeData);
@@ -101,7 +77,22 @@ export const apiService = () => {
       }
     },
 
-    // Function to fetch all employees
+    // Update employee details
+    updateEmployee: async (employeeData) => {
+      try {
+        const response = await authAxios.patch("/user/updateEmployee", employeeData);
+        if (!response?.data) {
+          throw new Error({ error: { response } });
+        }
+        return response.data;
+      } catch (error) {
+        throw new Error(
+          error.response?.data?.message || "Failed to update employee"
+        );
+      }
+    },
+
+    // Get all employees
     getAllEmployees: async () => {
       try {
         const response = await authAxios.get("/user/getAllEmployees");
@@ -116,7 +107,23 @@ export const apiService = () => {
       }
     },
 
-    // Function to create a new job
+    // Register a new user
+    register: async (userData) => {
+      try {
+        const response = await publicAxios.post("/user/register", userData);
+        if (!response?.data?.token) {
+          throw new Error({ error: { response } });
+        }
+        // Save token and user data to localStorage
+        localStorage.setItem("authToken", response.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+        return response.data;
+      } catch (error) {
+        throw new Error(error.response?.data?.message || "Registration failed");
+      }
+    },
+
+    // Create a new job
     createJob: async (jobData) => {
       try {
         const response = await authAxios.post("/jobs", jobData);
@@ -128,7 +135,7 @@ export const apiService = () => {
       }
     },
 
-    // Function to delete a job by ID
+    // Delete a job by ID
     deleteJob: async (jobId) => {
       try {
         const response = await authAxios.delete(`/jobs/${jobId}`);
@@ -140,7 +147,7 @@ export const apiService = () => {
       }
     },
 
-    // Function to fetch all jobs
+    // Get all jobs
     getJobs: async () => {
       try {
         const response = await authAxios.get("/jobs");
@@ -152,7 +159,7 @@ export const apiService = () => {
       }
     },
 
-    // Function to update a job's details
+    // Update job by ID
     updateJob: async (jobId, jobData) => {
       try {
         const response = await authAxios.put(`/jobs/${jobId}`, jobData);
@@ -164,42 +171,80 @@ export const apiService = () => {
       }
     },
 
-      // Method to update employee data
-    updateEmployee: async (employeeData) => {
+    // Upload image for a job
+    uploadJobImage: async (jobId, imageFile) => {
       try {
-        // Sending a PATCH request to the '/user/updateEmployee' endpoint with the employee data
-        const response = await authAxios.patch("/user/updateEmployee", employeeData);
-        
-        // If the response doesn't contain data, throw an error
-        if (!response?.data) {
-          throw new Error({ error: { response } });
+        const formData = new FormData();
+        formData.append('file', imageFile);
+
+        const response = await authAxios.post(`/upload`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+
+        if (response.data) {
+          // Call updateJobImage after uploading
+          await apiService().updateJobImage(jobId, response.data);
         }
 
-        // Return the response data (updated employee information)
         return response.data;
       } catch (error) {
-        // If an error occurs, throw a new error with the message or a default message
         throw new Error(
-          error.response?.data?.message || "Failed to update employee"
+          error.response?.data?.message || "Failed to upload job image"
         );
       }
     },
 
+    // Update image URL for a job
+    updateJobImage: async (jobId, imageUrl) => {
+      try {
+        const response = await authAxios.post(`/jobs/${jobId}/uploadImage`, {imageUrl});
 
-    // Function to update the user's profile
+        return response.data;
+      } catch (error) {
+        throw new Error(
+          error.response?.data?.message || "Failed to upload job image"
+        );
+      }
+    },
+
+    // Return image URL for display (example placeholder)
+    getJobImage:  (imageUrl) => {
+      try {
+        return `${API_BASE_URL}/files/1741617713456_a_unique_logo_for_a_platform_called(1).jpeg`
+      } catch (error) {
+        return ""
+      }
+    },
+
+    // Get current user info
+    getSelf: async () => {
+      try {
+        const response = await authAxios.get("/user/getSelf");
+        return response.data;
+      } catch (error) {
+        throw new Error(
+          error.response?.data?.message || "Failed to fetch user data"
+        );
+      }
+    },
+
+    // Update user profile
     updateProfile: async (userData) => {
       try {
-        const response = await authAxios.patch("/user/updateProfile", userData); // Send update request
+        const response = await authAxios.patch("/user/updateProfile", userData);
         if (!response?.data) {
-          throw new Error({ error: { response } }); // Throw an error if response is invalid
+          throw new Error({ error: { response } });
         }
-        localStorage.setItem("user", JSON.stringify(response.data)); // Update stored user data
-        return response.data; // Return response data
+        // Update user info in localStorage
+        localStorage.setItem("user", JSON.stringify(response.data));
+        return response.data;
       } catch (error) {
         throw new Error(
           error.response?.data?.message || "Failed to update user profile"
-        ); // Handle errors
+        );
       }
     },
-  }; 
+  };
 };
