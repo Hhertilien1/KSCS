@@ -32,6 +32,14 @@ export const NavigationHeader = ({ showLogout }) => {
     <nav> {/* Main navigation container */}
       <div className="nav-container"> {/* Container for the navigation items */}
         <h1 className="brand-name">Kitchen Saver</h1> {/* Brand name/title */}
+
+        {isLoggedIn ? (
+          <Link to={user?.role === "ADMIN" ? "/admin" : "/jobs"} className="ml-2">
+            <button> Home</button> {/* Button for home (admin or employee) */}
+          </Link>
+        ) : null}
+
+        
         
         {/* If the user is logged in and has an 'ADMIN' role, display admin-related links */}
         {isLoggedIn && user?.role === "ADMIN" ? (

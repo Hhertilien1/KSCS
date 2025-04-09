@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { apiService } from "../services/apiService";
+import { useUser } from "../hooks/useUser"; // import the hook
+
 
 function JobsTable({ filters }) {
   // State hooks to manage job data, filtered jobs, loading, and error messages
@@ -7,17 +9,23 @@ function JobsTable({ filters }) {
   const [filteredJobs, setFilteredJobs] = useState([]); // To store filtered jobs
   const [loading, setLoading] = useState(true); // To manage loading state
   const [error, setError] = useState(""); // To handle error messages
+  const { user } = useUser(); // Correct usage of the custom hook
 
-  // Function to handle the deletion of a job
-  const deleteJob = async (id) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this job?"
-    );
+
+ // Inside the deleteJob function
+const deleteJob = async (id) => {
+  // Check if the user is an admin
+  if (user && user.role === "admin") {
+    const confirmed = window.confirm("Are you sure you want to delete this job?");
     if (confirmed) {
       await apiService().deleteJob(id); // Delete the job using the API service
       await fetchJobs(); // Refresh the job list after deletion
     }
-  };
+  } else {
+    alert("You do not have permission to delete this job.");
+  }
+};
+
 
   // Function to apply filters to the jobs list
   const applyFilters = (filters) => {
