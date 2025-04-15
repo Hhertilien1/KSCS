@@ -44,9 +44,6 @@ export const NavigationHeader = ({ showLogout }) => {
         {/* If the user is logged in and has an 'ADMIN' role, display admin-related links */}
         {isLoggedIn && user?.role === "ADMIN" ? (
           <>
-            <Link to="/admin" className="ml-2"> {/* Link to the admin home page */}
-              <button> Home</button> {/* Button for home */}
-            </Link>
             <Link to="/createjob"> {/* Link to create a new job */}
               <button> Create Job</button> {/* Button for creating a job */}
             </Link>

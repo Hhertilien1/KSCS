@@ -15,7 +15,7 @@ function JobsTable({ filters }) {
  // Inside the deleteJob function
 const deleteJob = async (id) => {
   // Check if the user is an admin
-  if (user && user.role === "admin") {
+  if (user && user.role?.toLowerCase() === "admin") {
     const confirmed = window.confirm("Are you sure you want to delete this job?");
     if (confirmed) {
       await apiService().deleteJob(id); // Delete the job using the API service
@@ -239,7 +239,9 @@ const deleteJob = async (id) => {
             )}
           </td>
           <td>
+            {user?.role?.toLowerCase() === "admin" && (
             <button onClick={() => deleteJob(job.id)}>Delete</button>
+            )}
           </td>
         </tr>
       );
