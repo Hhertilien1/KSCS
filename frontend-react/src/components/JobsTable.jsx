@@ -202,23 +202,33 @@ const deleteJob = async (id) => {
               <option value="Completed">Completed</option>
             </select>
           </td>
+          
           <td>
             <select
               value={job.materialOrderStatus}
               onChange={(e) => updateMaterialOrdered(index, e.target.value)}
-              className={`${materialsOrderedClass} form-control form-control-sm`}
+              className={`form-control form-control-sm ${
+                job.materialOrderStatus === "ordered"
+                  ? "text-success"
+                  : "text-danger"
+              }`}
             >
               <option value="">No</option>
               <option value="ordered">Yes</option>
             </select>
           </td>
+
           <td>
             <select
               value={job.materialArrivalStatus}
               onChange={(e) => updateMaterialArrived(index, e.target.value)}
-              className={`${materialsArrivedClass} form-control form-control-sm`}
+              className={`form-control form-control-sm ${
+                job.materialArrivalStatus === "arrived"
+                  ? "text-success"
+                  : "text-danger"
+              }`}
             >
-              <option value="No">No</option>
+              <option value="">No</option>
               <option value="arrived">Yes</option>
             </select>
           </td>
