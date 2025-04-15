@@ -214,7 +214,7 @@ const deleteJob = async (id) => {
           </td>
           <td>
             <select
-              value={job.materialsArrivalStatus}
+              value={job.materialArrivalStatus}
               onChange={(e) => updateMaterialArrived(index, e.target.value)}
               className={`${materialsArrivedClass} form-control form-control-sm`}
             >
