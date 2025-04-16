@@ -11,7 +11,6 @@ const CreateEmployee = () => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
-    username: "",
     email: "",
     cell: "",
     role: "",
@@ -48,7 +47,6 @@ const CreateEmployee = () => {
     const {
       firstName,
       lastName,
-      username,
       email,
       cell,
       role,
@@ -61,7 +59,6 @@ const CreateEmployee = () => {
     if (
       !firstName ||
       !lastName ||
-      !username ||
       !email ||
       !cell ||
       !role ||
@@ -73,17 +70,16 @@ const CreateEmployee = () => {
     }
 
     const duplicate = employees.some(
-      (emp) => emp.username === username || emp.email === email
+      (emp) => emp.email === email
     );
     if (duplicate) {
-      setError("An employee with the same username or email already exists.");
+      setError("An employee with the same or email already exists.");
       return;
     }
 
     const newEmployee = {
       firstName,
       lastName,
-      username,
       email,
       cell,
       role,
@@ -111,7 +107,6 @@ const CreateEmployee = () => {
     const {
       firstName,
       lastName,
-      username,
       email,
       cell,
       role,
@@ -130,7 +125,6 @@ const CreateEmployee = () => {
       id: employees[editIndex].id,
       firstName,
       lastName,
-      username,
       email,
       cell,
       role,
@@ -148,7 +142,6 @@ const CreateEmployee = () => {
     setFormData({
       firstName: "",
       lastName: "",
-      username: "",
       email: "",
       cell: "",
       role: "",
@@ -224,19 +217,7 @@ const CreateEmployee = () => {
                   required
                 />
               </div>
-              <div className="form-group">
-                <label htmlFor="username">Username: </label>
-                <input
-                  type="text"
-                  id="username"
-                  placeholder="Enter your Username"
-                  className="form-control form-control-sm mb-1"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+              
               <div className="form-group">
                 <label htmlFor="email">Email: </label>
                 <input
@@ -344,7 +325,6 @@ const CreateEmployee = () => {
             <tr>
               <th>First Name</th>
               <th>Last Name</th>
-              <th>Username</th>
               <th>Email</th>
               <th>Cell</th>
               <th>Role</th>
@@ -357,7 +337,6 @@ const CreateEmployee = () => {
               <tr key={index}>
                 <td>{employee.firstName}</td>
                 <td>{employee.lastName}</td>
-                <td>{employee.username}</td>
                 <td>{employee.email}</td>
                 <td>{employee.cell}</td>
                 <td>{employee.role}</td>
