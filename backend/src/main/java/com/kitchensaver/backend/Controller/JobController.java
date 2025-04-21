@@ -45,7 +45,7 @@ public class JobController {
 
     // Endpoint to update an existing job by ID, accessible only by ADMIN
     @PutMapping("/{jobId}")
-    @PreAuthorize("hasRole('ADMIN')") // Restricts access to users with ADMIN role
+    @PreAuthorize("hasAnyRole('ADMIN', 'CABINET_MAKER', 'INSTALLER')") // Restricts access to users with ADMIN role
     public ResponseEntity<JobResponse> updateJob(@PathVariable Long jobId, @RequestBody JobRequest request) {
         try {
             JobResponse response = jobService.updateJob(jobId, request); // Calls service to update job
